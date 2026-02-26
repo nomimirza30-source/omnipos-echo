@@ -435,8 +435,8 @@ const OrderTable = () => {
                                         exit={{ opacity: 0, scale: 0.88 }}
                                         transition={{ duration: 0.2 }}
                                         className={`rounded-2xl p-4 flex flex-col gap-3 border ${isReady ? 'border-[rgb(52_211_153_/_0.35)] card-ready' :
-                                                hasUrgentAmend ? 'animate-urgent-blink' :
-                                                    'border-white/6'
+                                            hasUrgentAmend ? 'animate-urgent-blink' :
+                                                'border-white/6'
                                             }`}
                                         style={{ background: 'rgb(14 26 52 / 0.75)' }}
                                     >
@@ -473,29 +473,29 @@ const OrderTable = () => {
                                         {/* Footer */}
                                         <div className="border-t border-white/5 pt-3 flex items-center justify-between gap-2">
                                             <span className="font-black text-white text-sm">£{order.amount}</span>
-                                            <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                                                <button onClick={() => { setSelectedOrder(order); setIsAmendMode(false); setIsPaymentMode(false); }} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[rgb(100_120_150)] hover:text-white transition-all" title="View"><Eye size={13} /></button>
+                                            <div className="flex items-center gap-2 flex-wrap justify-end mt-1">
+                                                <button onClick={() => { setSelectedOrder(order); setIsAmendMode(false); setIsPaymentMode(false); }} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[rgb(150_170_200)] hover:text-white transition-all shadow-sm" title="View"><Eye size={18} /></button>
 
                                                 {['Admin', 'Manager', 'Kitchen', 'Chef', 'Assistant Chef', 'Owner'].includes(user.role) && isPending && (
                                                     <>
-                                                        <button onClick={() => updateOrderStatus(order.id, 'Declined')} className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Decline"><XCircle size={13} /></button>
-                                                        <button onClick={() => updateOrderStatus(order.id, 'Preparing')} className="px-2 py-1 rounded-lg badge-inprogress text-[9px] font-black uppercase hover:opacity-80 transition-all">Accept</button>
+                                                        <button onClick={() => updateOrderStatus(order.id, 'Declined')} className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all shadow-sm" title="Decline"><XCircle size={18} /></button>
+                                                        <button onClick={() => updateOrderStatus(order.id, 'Preparing')} className="px-4 py-2.5 rounded-xl badge-inprogress text-[11px] font-black uppercase hover:opacity-80 transition-all shadow-sm">Accept</button>
                                                     </>
                                                 )}
                                                 {['Admin', 'Manager', 'Kitchen', 'Chef', 'Assistant Chef', 'Owner'].includes(user.role) && isPreparing && (
-                                                    <button onClick={() => updateOrderStatus(order.id, 'Ready')} className="px-2 py-1 rounded-lg badge-ready text-[9px] font-black uppercase hover:opacity-80 transition-all flex items-center gap-0.5"><CheckCircle2 size={11} /> Ready</button>
+                                                    <button onClick={() => updateOrderStatus(order.id, 'Ready')} className="px-4 py-2.5 rounded-xl badge-ready text-[11px] font-black uppercase hover:opacity-80 transition-all flex items-center gap-1.5 shadow-sm"><CheckCircle2 size={16} /> Ready</button>
                                                 )}
                                                 {isReady && ['Admin', 'Manager', 'Waiter', 'Server', 'Wait Staff', 'Owner', 'Till'].includes(user.role) && (
-                                                    <button onClick={() => updateOrderStatus(order.id, 'Served')} className="px-2 py-1 rounded-lg bg-[rgb(52_211_153)] text-[#020d1a] text-[9px] font-black uppercase hover:opacity-90 transition-all">Mark Served</button>
+                                                    <button onClick={() => updateOrderStatus(order.id, 'Served')} className="px-4 py-2.5 rounded-xl bg-[rgb(52_211_153)] text-[#020d1a] text-[11px] font-black uppercase hover:opacity-90 transition-all shadow-sm">Mark Served</button>
                                                 )}
                                                 {(isPending || isPreparing || isServed) && (
-                                                    <button onClick={() => startAmend(order)} className="p-1.5 rounded-lg bg-white/5 hover:bg-[rgb(0_210_180_/_0.12)] text-[rgb(100_120_150)] hover:text-[rgb(0,210,180)] transition-all" title="Amend"><Edit3 size={13} /></button>
+                                                    <button onClick={() => startAmend(order)} className="p-2.5 rounded-xl bg-white/5 hover:bg-[rgb(0_210_180_/_0.12)] text-[rgb(150_170_200)] hover:text-[rgb(0,210,180)] transition-all shadow-sm" title="Amend"><Edit3 size={18} /></button>
                                                 )}
                                                 {isCancelled && (
-                                                    <button onClick={() => { if (user.role === 'Waiter') { setManagerOverrideAction({ type: 'delete', orderId: order.id }); setShowManagerOverride(true); setManagerPin(''); setPinError(''); setSelectedOrder(order); setIsPaymentMode(true); } else if (['Admin', 'Owner', 'Manager'].includes(user.role)) { if (window.confirm('Permanently remove?')) deleteOrder(order.id); } }} className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/15 transition-all" title="Delete"><Trash2 size={13} /></button>
+                                                    <button onClick={() => { if (user.role === 'Waiter') { setManagerOverrideAction({ type: 'delete', orderId: order.id }); setShowManagerOverride(true); setManagerPin(''); setPinError(''); setSelectedOrder(order); setIsPaymentMode(true); } else if (['Admin', 'Owner', 'Manager'].includes(user.role)) { if (window.confirm('Permanently remove?')) deleteOrder(order.id); } }} className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/15 transition-all shadow-sm" title="Delete"><Trash2 size={18} /></button>
                                                 )}
                                                 {isServed && ['Admin', 'Till', 'Manager'].includes(user.role) && (
-                                                    <button onClick={() => startPayment(order)} className="px-2 py-1 rounded-lg bg-[rgb(100_160_255_/_0.18)] border border-[rgb(100_160_255_/_0.3)] text-[rgb(100,160,255)] text-[9px] font-black uppercase animate-pulse flex items-center gap-0.5"><Banknote size={11} /> Pay</button>
+                                                    <button onClick={() => startPayment(order)} className="px-4 py-2.5 rounded-xl bg-[rgb(100_160_255_/_0.18)] border border-[rgb(100_160_255_/_0.3)] text-[rgb(100,160,255)] text-[11px] font-black uppercase animate-pulse flex items-center gap-1.5 shadow-sm"><Banknote size={16} /> Pay</button>
                                                 )}
                                             </div>
                                         </div>
@@ -653,9 +653,11 @@ const OrderTable = () => {
 
                                                 <div className="flex items-center gap-4">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="font-black text-text px-2 mb-0.5">{item.qty}</span>
+                                                        <button onClick={() => updateAmendedQty(item._uid, -1)} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[rgb(150_170_200)] hover:text-white transition-all shadow-sm border border-white/5"><Minus size={18} /></button>
+                                                        <span className="font-black text-white px-1 mb-0.5 min-w-[28px] text-center text-lg">{item.qty}</span>
+                                                        <button onClick={() => updateAmendedQty(item._uid, 1)} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[rgb(150_170_200)] hover:text-white transition-all shadow-sm border border-white/5"><Plus size={18} /></button>
                                                         {(item.isNew || selectedOrder.status !== 'Served') && (
-                                                            <button onClick={() => removeItemFromAmended(item._uid)} className="ml-2 p-1 text-muted hover:text-red-400"><Trash2 size={14} /></button>
+                                                            <button onClick={() => removeItemFromAmended(item._uid)} className="ml-3 p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all shadow-sm border border-red-500/10"><Trash2 size={18} /></button>
                                                         )}
                                                     </div>
                                                 </div>

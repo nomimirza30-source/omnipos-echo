@@ -438,17 +438,17 @@ const OrderEntry = () => {
                                             <div className="text-[10px] text-muted">£{(item.price * item.qty).toFixed(2)}</div>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <button onClick={() => updateQty(item.cartItemId, -1)} className="p-1 bg-glass/20 rounded-md hover:bg-red-500/20 text-text"><Minus size={12} /></button>
-                                            <span className="font-black text-sm text-text">{item.qty}</span>
+                                            <button onClick={() => updateQty(item.cartItemId, -1)} className="p-3 bg-glass/20 rounded-xl hover:bg-red-500/20 text-text transition-all"><Minus size={18} /></button>
+                                            <span className="font-black text-lg text-text min-w-[24px] text-center">{item.qty}</span>
                                             <button
                                                 onClick={() => updateQty(item.cartItemId, 1)}
                                                 disabled={
                                                     typeof menuItems.find(m => m.id === item.id)?.stockQuantity === 'number' &&
                                                     cart.filter(c => c.id === item.id).reduce((sum, c) => sum + c.qty, 0) >= menuItems.find(m => m.id === item.id)?.stockQuantity
                                                 }
-                                                className="p-1 bg-glass/20 rounded-md hover:bg-success/20 text-text disabled:opacity-30 disabled:hover:bg-glass/20 cursor-pointer disabled:cursor-not-allowed"
+                                                className="p-3 bg-glass/20 rounded-xl hover:bg-success/20 text-text disabled:opacity-30 disabled:hover:bg-glass/20 cursor-pointer disabled:cursor-not-allowed transition-all"
                                             >
-                                                <Plus size={12} />
+                                                <Plus size={18} />
                                             </button>
                                         </div>
                                     </div>
