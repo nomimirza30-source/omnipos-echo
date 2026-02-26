@@ -556,7 +556,19 @@ export const useStore = create(
                 const currentTenantId = get().currentTenantId;
                 if (!token || !currentTenantId || !categoryName) return;
 
+                // Prevent duplicates
+                if (get().categories.includes(categoryName)) {
+                    get().addNotification({ title: 'Duplicate', message: `Category "${categoryName}" already exists.`, type: 'warning' });
+                    return;
+                }
+
                 const tidHeader = currentTenantId?.includes?.('tenant') ? '00000000-0000-0000-0000-000000001111' : currentTenantId;
+
+                // OPTIMISTIC UPDATE: show immediately
+                set((state) => ({
+                    categories: [...state.categories, categoryName],
+                    logs: [...state.logs, `> Adding category ${categoryName}...`]
+                }));
 
                 try {
                     const response = await fetch('/api/menu/categories', {
@@ -570,12 +582,26 @@ export const useStore = create(
                     });
                     if (response.ok) {
                         set((state) => ({
-                            categories: [...state.categories, categoryName],
-                            logs: [...state.logs, `> Added category ${categoryName}`]
+                            logs: [...state.logs, `> Category "${categoryName}" saved.`]
                         }));
+                    } else {
+                        const errText = await response.text();
+                        console.error('Failed to save category:', response.status, errText);
+                        // Rollback
+                        set((state) => ({
+                            categories: state.categories.filter(c => c !== categoryName),
+                            logs: [...state.logs, `> Failed to save category "${categoryName}"`]
+                        }));
+                        get().addNotification({ title: 'Error', message: `Could not save category: ${errText || response.statusText}`, type: 'error' });
                     }
                 } catch (error) {
                     console.error('Failed to add category:', error);
+                    // Rollback
+                    set((state) => ({
+                        categories: state.categories.filter(c => c !== categoryName),
+                        logs: [...state.logs, `> Network error saving category "${categoryName}"`]
+                    }));
+                    get().addNotification({ title: 'Network Error', message: 'Could not connect to server to save category.', type: 'error' });
                 }
             },
             deleteCategory: async (categoryName) => {
