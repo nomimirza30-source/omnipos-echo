@@ -4,7 +4,7 @@ import { Edit3, Trash2, Plus, Tag, Image as ImageIcon, AlertTriangle } from 'luc
 import Modal from './Modal';
 
 const MenuEditor = () => {
-    const { menuItems, categories, addMenuItem, updateMenuItem, deleteMenuItem, updateMenuStock, user } = useStore();
+    const { menuItems, categories, addCategory, addMenuItem, updateMenuItem, deleteMenuItem, updateMenuStock, user } = useStore();
     const isKitchen = user.role === 'Kitchen';
     const [activeTab, setActiveTab] = useState('All');
     const [isModalOpen, setIsModalOpen] = useState(false);
