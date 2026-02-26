@@ -4,7 +4,7 @@ import { ShoppingCart, User, Users, Mail, MapPin, Plus, Minus, CheckCircle, XCir
 import { motion, AnimatePresence } from 'framer-motion';
 
 const OrderEntry = () => {
-    const { menuItems, tables, categories, createOrder, setView } = useStore();
+    const { menuItems, tables, categories, createOrder, setView, user } = useStore();
     const [step, setStep] = useState(1); // 1: Info, 2: Menu, 3: Confirm
     const [cart, setCart] = useState([]);
     const [orderType, setOrderType] = useState('Dine-in'); // 'Dine-in' or 'Takeaway'
@@ -154,6 +154,7 @@ const OrderEntry = () => {
                 tableId: orderType === 'Takeaway' ? '' : customerInfo.tableId,
                 notes: customerInfo.notes,
                 guestCount: orderType === 'Takeaway' ? 1 : customerInfo.guestCount,
+                operatorName: user?.name || user?.username || 'System',
                 items: cart,
                 amount: cartTotal.toFixed(2),
                 type: orderType

@@ -179,6 +179,7 @@ public class Order : ITenantEntity
     public string PendingAmendmentsJson { get; set; } = "[]"; // For proposed changes (adds/deletes)
     public string Notes { get; set; } = string.Empty;
     public int GuestCount { get; set; } = 1;
+    public string OperatorName { get; set; } = string.Empty;
     public string PaymentMethod { get; set; } = string.Empty; // Cash, Card, etc.
 
     // Payment Adjustments

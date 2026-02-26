@@ -50,6 +50,7 @@ public class OfflineSyncController : ControllerBase
                     PendingAmendmentsJson = localOrder.PendingAmendmentsJson,
                     Notes = localOrder.Notes,
                     GuestCount = localOrder.GuestCount,
+                    OperatorName = localOrder.OperatorName,
                     PaymentMethod = localOrder.PaymentMethod,
                     VectorClock = localOrder.VectorClock,
                     CreatedAt = localOrder.CreatedAt,
@@ -234,6 +235,7 @@ public class OfflineSyncController : ControllerBase
                     existingOrder.PendingAmendmentsJson = localOrder.PendingAmendmentsJson;
                     existingOrder.Notes = localOrder.Notes;
                     existingOrder.GuestCount = localOrder.GuestCount;
+                    existingOrder.OperatorName = localOrder.OperatorName;
                     existingOrder.PaymentMethod = localOrder.PaymentMethod;
                     existingOrder.VectorClock = localOrder.VectorClock;
                     existingOrder.PaidAt = localOrder.PaidAt;
@@ -353,6 +355,7 @@ public class OfflineSyncController : ControllerBase
                 PendingAmendmentsJson = o.PendingAmendmentsJson,
                 Notes = o.Notes,
                 GuestCount = o.GuestCount,
+                OperatorName = o.OperatorName,
                 PaymentMethod = o.PaymentMethod,
                 VectorClock = o.VectorClock,
                 CreatedAt = o.CreatedAt,
@@ -718,6 +721,9 @@ public class OrderSyncDto
     
     [JsonPropertyName("guestCount")]
     public int GuestCount { get; set; } = 1;
+
+    [JsonPropertyName("operatorName")]
+    public string OperatorName { get; set; } = string.Empty;
 
     [JsonPropertyName("paymentMethod")]
     public string PaymentMethod { get; set; } = string.Empty;

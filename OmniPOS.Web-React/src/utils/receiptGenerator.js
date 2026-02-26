@@ -43,21 +43,23 @@ export const generateReceipt = (order, branding = {}, tables = []) => {
     doc.text(`Guests: ${order.guestCount || 1}`, 5, 47);
 
     // Add Operator Name
+    let currentY = 52;
     if (order.operatorName) {
-        doc.text(`Served by: ${order.operatorName}`, 5, 52);
+        doc.text(`Served by: ${order.operatorName}`, 5, currentY);
+        currentY += 5;
     }
 
     // Divider
-    doc.line(5, 50, 75, 50);
+    doc.line(5, currentY - 2, 75, currentY - 2);
 
     // Items Header
     doc.setFont('helvetica', 'bold');
-    doc.text('Item', 5, 55);
-    doc.text('Qty', 55, 55);
-    doc.text('Price', 65, 55);
+    doc.text('Item', 5, currentY + 3);
+    doc.text('Qty', 55, currentY + 3);
+    doc.text('Price', 65, currentY + 3);
     doc.setFont('helvetica', 'normal');
 
-    let y = 62;
+    let y = currentY + 10;
     order.items.forEach(item => {
         // Handle long names
         const name = item.name.length > 25 ? item.name.substring(0, 22) + '...' : item.name;
