@@ -554,7 +554,11 @@ export const useStore = create(
             addCategory: async (categoryName) => {
                 const token = get().token;
                 const currentTenantId = get().currentTenantId;
-                if (!token || !currentTenantId || !categoryName) return;
+                if (!token || !currentTenantId || !categoryName) {
+                    console.error('[addCategory] Validation Failed:', { hasToken: !!token, currentTenantId, categoryName });
+                    get().addNotification({ title: 'Error', message: 'Missing token, tenant selection, or category name.', type: 'error' });
+                    return;
+                }
 
                 // Prevent duplicates
                 if (get().categories.includes(categoryName)) {
