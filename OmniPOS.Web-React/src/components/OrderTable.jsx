@@ -474,7 +474,7 @@ const OrderTable = () => {
                                         <div className="border-t border-white/5 pt-3 flex items-center justify-between gap-2">
                                             <span className="font-black text-white text-sm">£{order.amount}</span>
                                             <div className="flex items-center gap-2 flex-wrap justify-end mt-1">
-                                                <button onClick={() => { setSelectedOrder(order); setIsAmendMode(false); setIsPaymentMode(false); }} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[rgb(150_170_200)] hover:text-white transition-all shadow-sm" title="View"><Eye size={18} /></button>
+                                                <button onClick={() => { setSelectedOrder(order); setIsAmendMode(false); setIsPaymentMode(false); }} className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[11px] font-black uppercase text-[rgb(150_170_200)] hover:text-white transition-all shadow-sm tracking-wider" title="View">View</button>
 
                                                 {['Admin', 'Manager', 'Kitchen', 'Chef', 'Assistant Chef', 'Owner'].includes(user.role) && isPending && (
                                                     <>
@@ -489,7 +489,7 @@ const OrderTable = () => {
                                                     <button onClick={() => updateOrderStatus(order.id, 'Served')} className="px-4 py-2.5 rounded-xl bg-[rgb(52_211_153)] text-[#020d1a] text-[11px] font-black uppercase hover:opacity-90 transition-all shadow-sm">Mark Served</button>
                                                 )}
                                                 {(isPending || isPreparing || isServed) && (
-                                                    <button onClick={() => startAmend(order)} className="p-2.5 rounded-xl bg-white/5 hover:bg-[rgb(0_210_180_/_0.12)] text-[rgb(150_170_200)] hover:text-[rgb(0,210,180)] transition-all shadow-sm" title="Amend"><Edit3 size={18} /></button>
+                                                    <button onClick={() => startAmend(order)} className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-[rgb(0_210_180_/_0.12)] text-[11px] font-black uppercase tracking-wider text-[rgb(150_170_200)] hover:text-[rgb(0,210,180)] transition-all shadow-sm" title="Amend">Amend</button>
                                                 )}
                                                 {isCancelled && (
                                                     <button onClick={() => { if (user.role === 'Waiter') { setManagerOverrideAction({ type: 'delete', orderId: order.id }); setShowManagerOverride(true); setManagerPin(''); setPinError(''); setSelectedOrder(order); setIsPaymentMode(true); } else if (['Admin', 'Owner', 'Manager'].includes(user.role)) { if (window.confirm('Permanently remove?')) deleteOrder(order.id); } }} className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/15 transition-all shadow-sm" title="Delete"><Trash2 size={18} /></button>
