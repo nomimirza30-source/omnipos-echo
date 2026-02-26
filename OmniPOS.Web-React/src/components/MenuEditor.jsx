@@ -187,20 +187,29 @@ const MenuEditor = () => {
 
                     {/* Add Category */}
                     {!isKitchen && (
-                        <form onSubmit={handleAddCategory} className="px-3 mt-3 pt-3 border-t border-white/5 flex flex-col gap-2">
+                        <div className="px-3 mt-3 pt-3 border-t border-white/5 flex flex-col gap-2">
                             <input
                                 type="text"
-                                required
                                 placeholder="New category..."
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleAddCategory(e);
+                                    }
+                                }}
                                 className="w-full bg-white/5 border border-white/8 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[rgb(0_210_180_/_0.5)] placeholder-[rgb(80_100_130)]"
                                 style={{ borderColor: 'rgb(255 255 255 / 0.08)' }}
                             />
-                            <button type="submit" className="w-full py-1.5 rounded-lg badge-inprogress text-[10px] font-black uppercase hover:opacity-80 transition-all flex items-center justify-center gap-1">
+                            <button
+                                type="button"
+                                onClick={handleAddCategory}
+                                className="w-full py-1.5 rounded-lg badge-inprogress text-[10px] font-black uppercase hover:opacity-80 transition-all flex items-center justify-center gap-1"
+                            >
                                 <Plus size={11} /> Add
                             </button>
-                        </form>
+                        </div>
                     )}
                 </div>
 
