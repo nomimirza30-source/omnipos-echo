@@ -1,0 +1,31 @@
+name: VPS Diagnostic
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check VPS Container Logs
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            echo "=== Docker Container Status ==="
+            cd /root/omnipos
+            docker compose ps
+            
+            echo ""
+            echo "=== API Container Logs (Last 100 lines) ==="
+            docker compose logs api --tail=100
+            
+            echo ""
+            echo "=== Database Files ==="
+            docker compose exec -T api ls -lah /app/*.db 2>/dev/null || echo "No database files found"
+            
+            echo ""
+            echo "=== Container Stats ==="
+            docker stats --no-stream
