@@ -28,9 +28,18 @@ const MenuEditor = () => {
 
     const handleAddCategory = (e) => {
         e.preventDefault();
-        if (newCategoryName.trim()) {
+        console.log('[MenuEditor] handleAddCategory click!', newCategoryName);
+        if (!newCategoryName.trim()) {
+            window.alert('Please type a category name first');
+            return;
+        }
+
+        try {
+            window.alert('Attempting to add: ' + newCategoryName);
             addCategory(newCategoryName.trim());
             setNewCategoryName('');
+        } catch (err) {
+            window.alert('Crash in addCategory: ' + err.message);
         }
     };
 
