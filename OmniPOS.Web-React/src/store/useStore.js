@@ -578,7 +578,7 @@ export const useStore = create(
                             Authorization: `Bearer ${token}`,
                             'X-Tenant-ID': tidHeader
                         },
-                        body: JSON.stringify({ categoryId: generateGUID(), tenantId: tidHeader, name: categoryName })
+                        body: JSON.stringify({ CategoryId: generateGUID(), TenantId: tidHeader, Name: categoryName })
                     });
                     if (response.ok) {
                         set((state) => ({
