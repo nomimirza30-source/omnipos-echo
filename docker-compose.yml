@@ -6,7 +6,6 @@ services:
     container_name: omnipos-api
     networks:
       - omnipos-network
-      - cloudflare_tunnel_default
     volumes:
       - ./OmniPOS.Api/wwwroot/uploads:/app/wwwroot/uploads
       - ./data:/app/data
@@ -31,7 +30,6 @@ services:
       - api
     networks:
       - omnipos-network
-      - cloudflare_tunnel_default
     restart: always
   # Certbot/SSL is now handled by Cloudflare Tunnel
   # certbot:
@@ -48,8 +46,6 @@ services:
 networks:
   omnipos-network:
     driver: bridge
-  cloudflare_tunnel_default:
-    external: true
 
 # No named volumes needed for certificates now
 # volumes:
