@@ -541,7 +541,7 @@ const OrderTable = () => {
                                 <span className="block text-[9px] text-muted font-black mt-0.5">{displayOrder.guestCount || 1} Guests</span>
                                 <span className="block text-[8px] text-muted/60 font-mono mt-0.5">{displayOrder.createdAt ? new Date(displayOrder.createdAt).toLocaleTimeString() : 'Recent'}</span>
                                 <button
-                                    onClick={() => generateReceipt(displayOrder, branding)}
+                                    onClick={() => generateReceipt(displayOrder, branding, tables)}
                                     className="mt-2 flex items-center gap-1.5 px-2 py-1 bg-glass/20 hover:bg-primary/20 text-[9px] font-black uppercase text-muted hover:text-primary rounded-lg transition-all border border-text/10"
                                 >
                                     <PackageCheck size={12} /> Print Receipt
@@ -1058,7 +1058,7 @@ const OrderTable = () => {
                                                         amount: subtotal,
                                                         status: 'Pending Payment'
                                                     };
-                                                    generateReceipt(billPreview, branding);
+                                                    generateReceipt(billPreview, branding, tables);
                                                 }}
                                                 className="w-full bg-secondary/20 hover:bg-secondary/30 text-secondary border border-secondary/30 font-black py-3 rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
                                                 title="Print bill for customer review before payment"

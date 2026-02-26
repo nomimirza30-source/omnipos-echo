@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 
-export const generateReceipt = (order, branding = {}) => {
+export const generateReceipt = (order, branding = {}, tables = []) => {
     const doc = jsPDF({
         unit: 'mm',
         format: [80, 150] // Common thermal receipt size
@@ -22,13 +22,30 @@ export const generateReceipt = (order, branding = {}) => {
     doc.setDrawColor(200, 200, 200);
     doc.line(5, 25, 75, 25);
 
+    // Resolve Table Number
+    let tableDisplay = 'Walk-in';
+    if (order.tableNum) {
+        tableDisplay = order.tableNum;
+    } else if (order.tableId) {
+        const tableIds = order.tableId.split(',').filter(Boolean);
+        const tableNums = tableIds.map(tid => tables.find(t => t.id === tid)?.num).filter(Boolean);
+        if (tableNums.length > 0) {
+            tableDisplay = tableNums.join(', ');
+        }
+    }
+
     // Order Info
     doc.setFontSize(8);
     doc.setTextColor('#000000');
     doc.text(`Order ID: ${order.id.substring(0, 8)}`, 5, 32);
     doc.text(`Date: ${new Date().toLocaleString()}`, 5, 37);
-    doc.text(`Table: ${order.tableNum || order.tableId || 'Walk-in'}`, 5, 42);
+    doc.text(`Table: ${tableDisplay}`, 5, 42);
     doc.text(`Guests: ${order.guestCount || 1}`, 5, 47);
+
+    // Add Operator Name
+    if (order.operatorName) {
+        doc.text(`Served by: ${order.operatorName}`, 5, 52);
+    }
 
     // Divider
     doc.line(5, 50, 75, 50);

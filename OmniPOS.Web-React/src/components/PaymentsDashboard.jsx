@@ -5,7 +5,7 @@ import { generateReceipt } from '../utils/receiptGenerator';
 import { useStore } from '../store/useStore';
 
 const PaymentsDashboard = () => {
-    const { orders, currentTenantId, deleteOrder, cashRegister, openRegister, closeRegister, cashLogs, fetchCashLogs, addCashLog, user, isAdmin, branding } = useStore();
+    const { orders, currentTenantId, deleteOrder, cashRegister, openRegister, closeRegister, cashLogs, fetchCashLogs, addCashLog, user, isAdmin, branding, tables } = useStore();
     const [searchTerm, setSearchTerm] = useState('');
     const [methodFilter, setMethodFilter] = useState('All'); // All, Cash, Card
     const [isOpeningRegister, setIsOpeningRegister] = useState(false);
@@ -407,7 +407,7 @@ const PaymentsDashboard = () => {
                                         </td>
                                         <td className="px-8 py-6 text-right space-x-2">
                                             <button
-                                                onClick={() => generateReceipt(order, branding)}
+                                                onClick={() => generateReceipt(order, branding, tables)}
                                                 className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all border border-primary/20"
                                                 title="Reprint Receipt"
                                             >
