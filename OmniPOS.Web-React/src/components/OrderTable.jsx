@@ -56,12 +56,13 @@ const OrderTable = () => {
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
     const getBlinkStyles = (order) => {
+        const status = order.status;
+        if (status.includes('Ready')) return { border: 'border-orange-500', animate: 'animate-blink-orange', badge: 'bg-orange-600' };
+
         const hasPending = Array.isArray(order.pendingAmendments) && order.pendingAmendments.length > 0;
         if (hasPending || order.isAmended) {
             return { border: 'border-amber-500', animate: 'animate-blink-amber', badge: 'bg-amber-600' };
         }
-        const status = order.status;
-        if (status.includes('Ready')) return { border: 'border-orange-500', animate: 'animate-blink-orange', badge: 'bg-orange-600' };
         if (status.includes('Served')) return { border: 'border-purple-500', animate: 'animate-blink-purple', badge: 'bg-purple-600' };
         if (status.includes('Preparing') || status.includes('InProgress')) return { border: 'border-green-500', animate: 'animate-blink-green', badge: 'bg-green-600' };
         return { border: 'border-red-500', animate: 'animate-blink-red', badge: 'bg-red-600' };
