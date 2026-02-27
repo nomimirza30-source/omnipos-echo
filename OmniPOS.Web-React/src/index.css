@@ -164,11 +164,11 @@ body {
   animation: order-status-blink 1.0s ease-in-out infinite !important;
 }
 
-.animate-blink-darkgreen {
-  --blink-color: rgb(21 128 61);
-  --blink-shadow: rgb(21 128 61 / 0.6);
-  --blink-bg: rgb(21 128 61 / 0.25);
-  --blink-soft: rgb(21 128 61 / 0.3);
+.animate-blink-purple {
+  --blink-color: rgb(168 85 247);
+  --blink-shadow: rgb(168 85 247 / 0.6);
+  --blink-bg: rgb(168 85 247 / 0.25);
+  --blink-soft: rgb(168 85 247 / 0.3);
   animation: order-status-blink 0.8s ease-in-out infinite !important;
 }
 

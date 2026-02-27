@@ -58,7 +58,7 @@ const OrderTable = () => {
     const getBlinkStyles = (order) => {
         const status = order.status;
         if (status.includes('Ready')) return { border: 'border-orange-500', animate: 'animate-blink-orange', badge: 'bg-orange-600' };
-        if (status.includes('Served')) return { border: 'border-green-700', animate: 'animate-blink-darkgreen', badge: 'bg-green-800' };
+        if (status.includes('Served')) return { border: 'border-purple-500', animate: 'animate-blink-purple', badge: 'bg-purple-600' };
         if (status.includes('Preparing') || status.includes('InProgress')) return { border: 'border-green-500', animate: 'animate-blink-green', badge: 'bg-green-600' };
         return { border: 'border-red-500', animate: 'animate-blink-red', badge: 'bg-red-600' };
     };
