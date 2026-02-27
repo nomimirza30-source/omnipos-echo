@@ -906,7 +906,7 @@ export const useStore = create(
                             return menuItem;
                         });
 
-                        syncChannel.postMessage({ type: 'SYNC_ORDERS', payload: orders });
+                        syncChannel.postMessage({ type: 'SYNC_ORDERS', payload: { orders, unreadOrders: Array.from(new Set([...state.unreadOrders, id])) } });
                         syncChannel.postMessage({ type: 'SYNC_TABLES', payload: updatedTables });
                         syncChannel.postMessage({ type: 'SYNC_CUSTOMERS', payload: updatedCustomers });
 
@@ -1758,6 +1758,7 @@ export const useStore = create(
                             })
                         }));
                         addLog("Sync complete. State reconciled.");
+                        await get().fetchOrders();
                     } else {
                         const errText = await response.text();
                         addLog(`Sync rejected: ${errText.slice(0, 50)}...`);
@@ -2234,11 +2235,14 @@ export const useStore = create(
                                 );
 
                                 if (statusChanged || amendmentChanged) {
+                                    if (!oldOrder) console.log(`[fetchOrders] New unread order detected: ${mo.id}`);
+                                    else console.log(`[fetchOrders] Change detected for order ${mo.id}: status=${statusChanged}, amend=${amendmentChanged}`);
                                     newUnreadIds.push(mo.id);
                                 }
                             });
 
                             if (newUnreadIds.length > 0) {
+                                console.log('[fetchOrders] Triggering beep for new IDs:', newUnreadIds);
                                 get().triggerBeep();
                             }
 
@@ -2246,10 +2250,18 @@ export const useStore = create(
                             const merged = [...remainingOffline, ...mappedOrders];
                             merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+                            const updatedUnread = Array.from(new Set([...state.unreadOrders, ...newUnreadIds]));
+
+                            // BROADCAST global state to other tabs on same machine
+                            syncChannel.postMessage({
+                                type: 'SYNC_ORDERS',
+                                payload: { orders: merged, unreadOrders: updatedUnread }
+                            });
+
                             console.log('[fetchOrders] Updated orders:', merged.length, 'total');
                             return {
                                 orders: merged,
-                                unreadOrders: Array.from(new Set([...state.unreadOrders, ...newUnreadIds]))
+                                unreadOrders: updatedUnread
                             };
                         });
                     }
@@ -2384,7 +2396,14 @@ syncChannel.onmessage = (event) => {
 
     switch (type) {
         case 'SYNC_ORDERS':
-            useStore.setState({ orders: payload });
+            if (payload.orders) {
+                useStore.setState({
+                    orders: payload.orders,
+                    unreadOrders: payload.unreadOrders || store.unreadOrders
+                });
+            } else {
+                useStore.setState({ orders: payload });
+            }
             break;
         case 'SYNC_TABLES':
             useStore.setState({ tables: payload });
