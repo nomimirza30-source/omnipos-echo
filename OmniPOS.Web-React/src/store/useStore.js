@@ -31,6 +31,7 @@ export const useStore = create(
 
             orders: [],
             processedAmendmentIds: [],
+            unreadOrders: [],
             reservations: [],
             notifications: [],
             customers: [
@@ -2106,6 +2107,9 @@ export const useStore = create(
                 }
             },
 
+            markOrderRead: (orderId) => set((state) => ({
+                unreadOrders: state.unreadOrders.filter(id => id !== orderId)
+            })),
 
             fetchOrders: async () => {
                 const { currentTenantId, user, token } = get();
@@ -2193,12 +2197,25 @@ export const useStore = create(
                             const serverOrderIds = mappedOrders.map(mo => mo.id);
                             const remainingOffline = localOffline.filter(lo => !serverOrderIds.includes(lo.id));
 
+                            // Detect status changes to flag as unread
+                            const newUnreadIds = [];
+                            mappedOrders.forEach(mo => {
+                                const oldOrder = state.orders.find(o => o.id === mo.id);
+                                // If it existed locally before, and the core status changed, mark it unread!
+                                if (oldOrder && oldOrder.status !== mo.status) {
+                                    newUnreadIds.push(mo.id);
+                                }
+                            });
+
                             // Merge: offline orders + all server orders
                             const merged = [...remainingOffline, ...mappedOrders];
                             merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
                             console.log('[fetchOrders] Updated orders:', merged.length, 'total');
-                            return { orders: merged };
+                            return {
+                                orders: merged,
+                                unreadOrders: Array.from(new Set([...state.unreadOrders, ...newUnreadIds]))
+                            };
                         });
                     }
                 } catch (error) {
