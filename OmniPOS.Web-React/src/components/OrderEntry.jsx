@@ -154,7 +154,7 @@ const OrderEntry = () => {
                 tableId: orderType === 'Takeaway' ? '' : customerInfo.tableId,
                 notes: customerInfo.notes,
                 guestCount: orderType === 'Takeaway' ? 1 : customerInfo.guestCount,
-                operatorName: user?.name || user?.username || 'System',
+                operatorName: user?.fullName || user?.name || user?.username || 'System',
                 items: cart,
                 amount: cartTotal.toFixed(2),
                 type: orderType
