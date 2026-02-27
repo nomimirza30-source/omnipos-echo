@@ -2,12 +2,68 @@ import React, { useMemo } from 'react';
 import { useStore } from '../store/useStore';
 import {
     TrendingUp, ArrowUpRight, ArrowDownRight, Users,
-    DollarSign, Package, PieChart, Activity, ShoppingCart, Truck
+    DollarSign, Package, PieChart, Activity, ShoppingCart, Truck, Download
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AnalyticsDashboard = () => {
     const { orders, customers, menuItems } = useStore();
+
+    const handleExportExcel = () => {
+        const headers = [
+            'Order ID',
+            'Daily Seq',
+            'Type',
+            'Customer/Table',
+            'Status',
+            'Amount (£)',
+            'Placed At',
+            'Accepted At',
+            'Ready At',
+            'Served At',
+            'Paid At'
+        ];
+
+        const rows = orders.map(o => {
+            const history = o.statusHistory || [];
+            const getStatusTime = (status) => {
+                const entry = history.find(h => h.status === status);
+                return entry ? new Date(entry.timestamp).toLocaleString() : '-';
+            };
+
+            // Special case for 'Placed' which might be 'Pending' in older data
+            const placedTime = history.find(h => h.status === 'Placed' || h.status === 'Pending')?.timestamp;
+
+            return [
+                o.id.substring(0, 8),
+                o.dailySequence || '-',
+                o.type,
+                o.tableId ? `Table ${o.tableId}` : (o.customerName || 'Walk-in'),
+                o.status,
+                parseFloat(o.amount).toFixed(2),
+                placedTime ? new Date(placedTime).toLocaleString() : '-',
+                getStatusTime('Accepted'),
+                getStatusTime('Ready'),
+                getStatusTime('Served'),
+                o.paidAt ? new Date(o.paidAt).toLocaleString() : '-'
+            ];
+        });
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `OmniPOS_Order_Stats_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     // Memoize analytics calculations
     const stats = useMemo(() => {
@@ -71,6 +127,15 @@ const AnalyticsDashboard = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-3xl font-black text-text uppercase tracking-tighter">Analytics & Metrics</h1>
+                <button
+                    onClick={handleExportExcel}
+                    className="bg-primary text-slate-950 px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 hover:scale-[1.02] transition-transform shadow-xl shadow-primary/20"
+                >
+                    <Download size={16} /> Export to Excel
+                </button>
+            </div>
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
