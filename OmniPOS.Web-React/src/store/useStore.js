@@ -1129,9 +1129,12 @@ export const useStore = create(
                     return {
                         orders: updatedOrders,
                         tables: updatedTables,
+                        unreadOrders: Array.from(new Set([...state.unreadOrders, id])),
                         logs: [...state.logs, `> Order ${id} changed to ${newStatus}`]
                     };
                 });
+
+                get().triggerBeep();
 
                 // Add notification for status change
                 const tableNum = order.tableId
@@ -2107,6 +2110,24 @@ export const useStore = create(
                 }
             },
 
+            triggerBeep: () => {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch A5
+                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Gentle volume
+                    gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3); // Quick fade
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.3);
+                } catch (e) {
+                    console.log('Audio context beep failed:', e);
+                }
+            },
+
             markOrderRead: (orderId) => set((state) => ({
                 unreadOrders: state.unreadOrders.filter(id => id !== orderId)
             })),
@@ -2197,38 +2218,18 @@ export const useStore = create(
                             const serverOrderIds = mappedOrders.map(mo => mo.id);
                             const remainingOffline = localOffline.filter(lo => !serverOrderIds.includes(lo.id));
 
-                            // Detect status changes to flag as unread
+                            // Detect status changes or NEW orders to flag as unread
                             const newUnreadIds = [];
                             mappedOrders.forEach(mo => {
                                 const oldOrder = state.orders.find(o => o.id === mo.id);
-                                // If it existed locally before, and the core status changed, mark it unread!
-                                if (oldOrder && oldOrder.status !== mo.status) {
+                                // If status changed OR it is a brand new order from elsewhere
+                                if (!oldOrder || oldOrder.status !== mo.status) {
                                     newUnreadIds.push(mo.id);
                                 }
                             });
 
                             if (newUnreadIds.length > 0) {
-                                // Provide an audible beep (base64 standard short blip)
-                                // Standard short sine wave beep encoded for browser playback without an external file
-                                const beepSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
-                                // A proper base64 tiny 440hz beep file:
-                                beepSound.src = 'data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//OExGQAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
-                                // We'll just use a small JS Oscillator network to be 100% reliable across browsers and offline constraints
-                                try {
-                                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                                    const oscillator = audioCtx.createOscillator();
-                                    const gainNode = audioCtx.createGain();
-                                    oscillator.type = 'sine';
-                                    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch A5
-                                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Gentle volume
-                                    gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3); // Quick fade
-                                    oscillator.connect(gainNode);
-                                    gainNode.connect(audioCtx.destination);
-                                    oscillator.start();
-                                    oscillator.stop(audioCtx.currentTime + 0.3);
-                                } catch (e) {
-                                    console.log('Audio context beep failed:', e);
-                                }
+                                get().triggerBeep();
                             }
 
                             // Merge: offline orders + all server orders
