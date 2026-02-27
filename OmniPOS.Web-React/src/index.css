@@ -172,6 +172,14 @@ body {
   animation: order-status-blink 0.8s ease-in-out infinite !important;
 }
 
+.animate-blink-amber {
+  --blink-color: rgb(245 158 11);
+  --blink-shadow: rgb(245 158 11 / 0.6);
+  --blink-bg: rgb(245 158 11 / 0.25);
+  --blink-soft: rgb(245 158 11 / 0.3);
+  animation: order-status-blink 0.8s ease-in-out infinite !important;
+}
+
 .animate-urgent-blink {
   animation: urgent-blink 0.9s ease-in-out infinite;
 }
