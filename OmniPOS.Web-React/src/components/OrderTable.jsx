@@ -56,7 +56,8 @@ const OrderTable = () => {
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
     const getBlinkStyles = (order) => {
-        if (order.isAmended || (Array.isArray(order.pendingAmendments) && order.pendingAmendments.length > 0)) {
+        const hasPending = Array.isArray(order.pendingAmendments) && order.pendingAmendments.length > 0;
+        if (hasPending || order.isAmended) {
             return { border: 'border-amber-500', animate: 'animate-blink-amber', badge: 'bg-amber-600' };
         }
         const status = order.status;

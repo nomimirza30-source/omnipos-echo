@@ -180,8 +180,22 @@ body {
   animation: order-status-blink 0.8s ease-in-out infinite !important;
 }
 
+@keyframes urgent-blink {
+
+  0%,
+  100% {
+    border-color: rgb(245 158 11);
+    box-shadow: 0 0 15px rgb(245 158 11 / 0.4);
+  }
+
+  50% {
+    border-color: rgb(245 158 11 / 0.2);
+    box-shadow: 0 0 2px rgb(245 158 11 / 0.1);
+  }
+}
+
 .animate-urgent-blink {
-  animation: urgent-blink 0.9s ease-in-out infinite;
+  animation: urgent-blink 1.0s ease-in-out infinite;
 }
 
 /* ── Scrollbar ── */
