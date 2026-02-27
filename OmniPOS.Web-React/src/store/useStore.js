@@ -2223,8 +2223,17 @@ export const useStore = create(
                             const newUnreadIds = [];
                             mappedOrders.forEach(mo => {
                                 const oldOrder = state.orders.find(o => o.id === mo.id);
-                                // If it's a new order OR its status has changed from what we knew
-                                if (!oldOrder || oldOrder.status !== mo.status) {
+
+                                // Detect status changes
+                                const statusChanged = !oldOrder || oldOrder.status !== mo.status;
+
+                                // Detect amendment changes (e.g. new items added by another user)
+                                const amendmentChanged = oldOrder && (
+                                    (oldOrder.pendingAmendments?.length !== mo.pendingAmendments?.length) ||
+                                    (!oldOrder.isAmended && mo.isAmended)
+                                );
+
+                                if (statusChanged || amendmentChanged) {
                                     newUnreadIds.push(mo.id);
                                 }
                             });
