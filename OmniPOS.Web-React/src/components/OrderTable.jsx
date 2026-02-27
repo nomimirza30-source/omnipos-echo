@@ -55,6 +55,14 @@ const OrderTable = () => {
     const [pinError, setPinError] = useState('');
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
+    const getBlinkStyles = (order) => {
+        const status = order.status;
+        if (status.includes('Ready')) return { border: 'border-orange-500', animate: 'animate-blink-orange', badge: 'bg-orange-600' };
+        if (status.includes('Served')) return { border: 'border-green-700', animate: 'animate-blink-darkgreen', badge: 'bg-green-800' };
+        if (status.includes('Preparing') || status.includes('InProgress')) return { border: 'border-green-500', animate: 'animate-blink-green', badge: 'bg-green-600' };
+        return { border: 'border-red-500', animate: 'animate-blink-red', badge: 'bg-red-600' };
+    };
+
     const currentOrders = orders
         .filter(o => o.tenantId === currentTenantId && o.status !== 'Paid')
         .sort((a, b) => {
@@ -443,7 +451,7 @@ const OrderTable = () => {
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.88 }}
                                         transition={{ duration: 0.2 }}
-                                        className={`rounded-2xl p-4 flex flex-col gap-3 border-2 transition-all duration-300 ${unreadOrders?.includes(order.id) ? 'border-red-500 animate-status-blink ring-2 ring-red-500/20' :
+                                        className={`rounded-2xl p-4 flex flex-col gap-3 border-2 transition-all duration-300 ${unreadOrders?.includes(order.id) ? `${getBlinkStyles(order).border} ${getBlinkStyles(order).animate}` :
                                             isReady ? 'border-[rgb(52_211_153_/_0.35)] card-ready' :
                                                 hasUrgentAmend ? 'animate-urgent-blink' :
                                                     'border-white/6'
@@ -455,7 +463,7 @@ const OrderTable = () => {
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-1.5 flex-wrap">
                                                     {unreadOrders?.includes(order.id) && (
-                                                        <span className="text-[10px] bg-red-600 text-white font-black px-2 py-0.5 rounded-full animate-bounce shadow-lg shadow-red-500/40">URGENT!</span>
+                                                        <span className={`text-[10px] ${getBlinkStyles(order).badge} text-white font-black px-2 py-0.5 rounded-full animate-bounce shadow-lg`}>URGENT!</span>
                                                     )}
                                                     <span className="text-white font-black text-sm truncate">
                                                         {tableLabel !== 'Walk-in' ? `Table ${tableLabel}` : (order.customerName || 'Walk-in')}
