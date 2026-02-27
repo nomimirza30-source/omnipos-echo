@@ -830,6 +830,22 @@ export const useStore = create(
 
                     const clock = { [deviceId]: 1 };
 
+                    const now = new Date();
+                    const startOfDay = new Date(now.setHours(0, 0, 0, 0)).toISOString();
+                    const endOfDay = new Date(now.setHours(23, 59, 59, 999)).toISOString();
+
+                    // Calculate daily sequence for takeaways
+                    let dailySequence = null;
+                    if (orderData.type === 'Takeaway') {
+                        const todayTakeaways = get().orders.filter(o =>
+                            o.type === 'Takeaway' &&
+                            o.createdAt >= startOfDay &&
+                            o.createdAt <= endOfDay
+                        );
+                        const lastSeq = todayTakeaways.reduce((max, o) => Math.max(max, o.dailySequence || 0), 0);
+                        dailySequence = lastSeq + 1;
+                    }
+
                     const newOrder = {
                         id,
                         tenantId: currentTenantId,
@@ -838,7 +854,9 @@ export const useStore = create(
                         syncStatus: 'Offline',
                         pendingAmendments: [],
                         clock,
-                        createdAt: new Date().toISOString()
+                        createdAt: new Date().toISOString(),
+                        dailySequence, // Add the daily sequence number
+                        statusHistory: [{ status: 'Placed', timestamp: new Date().toISOString() }]
                     };
 
                     set((state) => {
@@ -1117,7 +1135,13 @@ export const useStore = create(
 
                 // Update local state immediately for responsive UI
                 set((state) => {
-                    const updatedOrders = state.orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
+                    const updatedOrders = state.orders.map(o => {
+                        if (o.id === id) {
+                            const updatedHistory = [...(o.statusHistory || []), { status: newStatus, timestamp: new Date().toISOString() }];
+                            return { ...o, status: newStatus, statusHistory: updatedHistory };
+                        }
+                        return o;
+                    });
                     const shouldFreeTable = ['Cancelled', 'Declined', 'Paid'].includes(newStatus);
                     const updatedTables = (shouldFreeTable && order?.tableId)
                         ? state.tables.map(t =>
@@ -1212,7 +1236,14 @@ export const useStore = create(
                             'X-Tenant-ID': get().currentTenantId?.includes?.('tenant') ? '00000000-0000-0000-0000-000000001111' : get().currentTenantId,
                             'Authorization': `Bearer ${get().token}`
                         },
-                        body: JSON.stringify({ newStatus })
+                        body: JSON.stringify({
+                            newStatus,
+                            metadataJson: JSON.stringify({
+                                items: order.items || [],
+                                statusHistory: [...(order.statusHistory || []), { status: newStatus, timestamp: new Date().toISOString() }],
+                                dailySequence: order.dailySequence || null
+                            })
+                        })
                     });
 
                     if (!response.ok) {
@@ -1705,7 +1736,11 @@ export const useStore = create(
                         tableNumber: tableNum,
                         totalAmount: parseFloat(o.amount),
                         status: o.status,
-                        metadataJson: JSON.stringify(o.items),
+                        metadataJson: JSON.stringify({
+                            items: o.items || [],
+                            statusHistory: o.statusHistory || [],
+                            dailySequence: o.dailySequence || null
+                        }),
                         notes: o.notes || '',
                         guestCount: o.guestCount || 1,
                         operatorName: o.operatorName || 'System',
@@ -2150,9 +2185,17 @@ export const useStore = create(
                             const clockJson = so.vectorClock || so.VectorClock || '{}';
                             const totalAmount = so.totalAmount !== undefined ? so.totalAmount : so.TotalAmount;
                             let items = [];
+                            let statusHistory = [];
+                            let dailySequence = null;
                             try {
-                                items = JSON.parse(itemsJson);
-                                if (!Array.isArray(items)) items = [];
+                                const parsedMetadata = JSON.parse(itemsJson);
+                                if (Array.isArray(parsedMetadata)) {
+                                    items = parsedMetadata;
+                                } else if (parsedMetadata && typeof parsedMetadata === 'object') {
+                                    items = parsedMetadata.items || [];
+                                    statusHistory = parsedMetadata.statusHistory || [];
+                                    dailySequence = parsedMetadata.dailySequence || null;
+                                }
                             } catch (e) {
                                 console.error('[useStore] Failed to parse items JSON:', itemsJson);
                             }
@@ -2180,7 +2223,10 @@ export const useStore = create(
                                     (so.FinalTotal !== undefined && so.FinalTotal !== null) ? parseFloat(so.FinalTotal) : parseFloat(totalAmount || 0),
                                 paidAt: so.paidAt || so.PaidAt || null,
                                 isAmended: so.isAmended || so.IsAmended || false,
-                                amendmentCount: so.amendmentCount || so.AmendmentCount || 0
+                                amendmentCount: so.amendmentCount || so.AmendmentCount || 0,
+                                // New fields parsed from metadata
+                                statusHistory: statusHistory,
+                                dailySequence: dailySequence
                             };
 
                             if (mappedOrder.serviceCharge > 0 || mappedOrder.discount > 0) {

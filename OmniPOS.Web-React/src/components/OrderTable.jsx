@@ -473,6 +473,9 @@ const OrderTable = () => {
                                                     <span className="text-white font-black text-sm truncate">
                                                         {tableLabel !== 'Walk-in' ? `Table ${tableLabel}` : (order.customerName || 'Walk-in')}
                                                     </span>
+                                                    {order.dailySequence && (
+                                                        <span className="text-[10px] bg-primary text-slate-950 px-2 py-0.5 rounded-full font-black shadow-sm">#{order.dailySequence}</span>
+                                                    )}
                                                     {order.syncStatus === 'Offline' && <CloudOff size={11} className="text-warning animate-pulse flex-shrink-0" />}
                                                     {order.isAmended && (
                                                         <span className="text-[8px] bg-warning/20 text-warning px-1.5 py-0.5 rounded border border-warning/30 font-black uppercase flex-shrink-0">Amended</span>
