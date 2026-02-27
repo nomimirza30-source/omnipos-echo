@@ -441,7 +441,7 @@ const OrderTable = () => {
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.88 }}
                                         transition={{ duration: 0.2 }}
-                                        className={`rounded-2xl p-4 flex flex-col gap-3 border ${unreadOrders?.includes(order.id) ? 'border-[var(--primary)] shadow-[0_0_20px_var(--primary-glow)] animate-pulse' :
+                                        className={`rounded-2xl p-4 flex flex-col gap-3 border transition-all ${unreadOrders?.includes(order.id) ? 'border-2 animate-status-blink' :
                                             isReady ? 'border-[rgb(52_211_153_/_0.35)] card-ready' :
                                                 hasUrgentAmend ? 'animate-urgent-blink' :
                                                     'border-white/6'

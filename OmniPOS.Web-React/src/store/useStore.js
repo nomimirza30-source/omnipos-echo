@@ -2218,11 +2218,11 @@ export const useStore = create(
                             const serverOrderIds = mappedOrders.map(mo => mo.id);
                             const remainingOffline = localOffline.filter(lo => !serverOrderIds.includes(lo.id));
 
-                            // Detect status changes or NEW orders to flag as unread
+                            // Detect status changes OR brand new orders to flag as unread
                             const newUnreadIds = [];
                             mappedOrders.forEach(mo => {
                                 const oldOrder = state.orders.find(o => o.id === mo.id);
-                                // If status changed OR it is a brand new order from elsewhere
+                                // If it's a new order OR its status has changed from what we knew
                                 if (!oldOrder || oldOrder.status !== mo.status) {
                                     newUnreadIds.push(mo.id);
                                 }
