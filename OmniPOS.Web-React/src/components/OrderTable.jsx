@@ -64,9 +64,11 @@ const OrderTable = () => {
             return new Date(b.createdAt) - new Date(a.createdAt); // Then newest
         });
 
-    console.log('[OrderTable] Current Tenant:', currentTenantId);
-    console.log('[OrderTable] All Orders:', orders);
-    console.log('[OrderTable] Filtered Orders:', currentOrders);
+    useEffect(() => {
+        if (unreadOrders && unreadOrders.length > 0) {
+            console.log('[OrderTable] Unread IDs:', unreadOrders);
+        }
+    }, [unreadOrders]);
 
     const orderInStore = orders.find(o => o.id === selectedOrder?.id);
     const displayOrder = isAmendMode ? { ...selectedOrder, items: amendedItems } : (orderInStore || selectedOrder);
@@ -441,7 +443,7 @@ const OrderTable = () => {
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.88 }}
                                         transition={{ duration: 0.2 }}
-                                        className={`rounded-2xl p-4 flex flex-col gap-3 border transition-all ${unreadOrders?.includes(order.id) ? 'border-2 animate-status-blink' :
+                                        className={`rounded-2xl p-4 flex flex-col gap-3 border-2 transition-all duration-300 ${unreadOrders?.includes(order.id) ? 'border-red-500 animate-status-blink ring-2 ring-red-500/20' :
                                             isReady ? 'border-[rgb(52_211_153_/_0.35)] card-ready' :
                                                 hasUrgentAmend ? 'animate-urgent-blink' :
                                                     'border-white/6'
@@ -452,6 +454,9 @@ const OrderTable = () => {
                                         <div className="flex items-start justify-between gap-2">
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-1.5 flex-wrap">
+                                                    {unreadOrders?.includes(order.id) && (
+                                                        <span className="text-[10px] bg-red-600 text-white font-black px-2 py-0.5 rounded-full animate-bounce shadow-lg shadow-red-500/40">URGENT!</span>
+                                                    )}
                                                     <span className="text-white font-black text-sm truncate">
                                                         {tableLabel !== 'Walk-in' ? `Table ${tableLabel}` : (order.customerName || 'Walk-in')}
                                                     </span>

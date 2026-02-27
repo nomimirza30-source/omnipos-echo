@@ -915,7 +915,8 @@ export const useStore = create(
                             orders,
                             customers: updatedCustomers,
                             tables: updatedTables,
-                            menuItems: updatedMenuItems
+                            menuItems: updatedMenuItems,
+                            unreadOrders: Array.from(new Set([...state.unreadOrders, id]))
                         };
                     });
                     get().addLog(`Triggering immediate sync for order ${id.slice(0, 4)}...`);
