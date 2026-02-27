@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useStore } from '../store/useStore';
 import {
     TrendingUp, ArrowUpRight, ArrowDownRight, Users,
-    DollarSign, Package, PieChart, Activity, ShoppingCart
+    DollarSign, Package, PieChart, Activity, ShoppingCart, Truck
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -33,7 +33,40 @@ const AnalyticsDashboard = () => {
             hourlySales[date.getHours()] += parseFloat(o.amount);
         });
 
-        return { totalSales, avgOrder, topItems, hourlySales, paidCount: paidOrders.length };
+        // Service Efficiency (New Metrics)
+        let totalPrepTime = 0;
+        let prepCount = 0;
+        let totalDeliveryTime = 0;
+        let deliveryCount = 0;
+
+        orders.forEach(o => {
+            if (o.statusHistory && o.statusHistory.length > 1) {
+                const placed = o.statusHistory.find(h => h.status === 'Placed' || h.status === 'Pending');
+                const ready = o.statusHistory.find(h => h.status === 'Ready');
+                const served = o.statusHistory.find(h => h.status === 'Served');
+
+                if (placed && ready) {
+                    const diff = (new Date(ready.timestamp) - new Date(placed.timestamp)) / 60000; // minutes
+                    if (diff > 0 && diff < 180) { // filter out outliers > 3h
+                        totalPrepTime += diff;
+                        prepCount++;
+                    }
+                }
+
+                if (ready && served) {
+                    const diff = (new Date(served.timestamp) - new Date(ready.timestamp)) / 60000; // minutes
+                    if (diff > 0 && diff < 120) { // filter out outliers > 2h
+                        totalDeliveryTime += diff;
+                        deliveryCount++;
+                    }
+                }
+            }
+        });
+
+        const avgPrepTime = prepCount > 0 ? totalPrepTime / prepCount : 0;
+        const avgDeliveryTime = deliveryCount > 0 ? totalDeliveryTime / deliveryCount : 0;
+
+        return { totalSales, avgOrder, topItems, hourlySales, paidCount: paidOrders.length, avgPrepTime, avgDeliveryTime };
     }, [orders]);
 
     return (
@@ -62,6 +95,31 @@ const AnalyticsDashboard = () => {
                         </div>
                         <div className="flex items-center gap-1 text-[10px] font-black text-success bg-success/10 w-fit px-2 py-1 rounded-lg">
                             <ArrowUpRight size={10} /> {stat.trend}
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+
+            {/* Service Efficiency KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                    { label: 'Avg Preparation Time', value: `${stats.avgPrepTime.toFixed(1)}m`, icon: Activity, color: 'text-orange-500', bg: 'bg-orange-500/10', sub: 'Placed → Ready' },
+                    { label: 'Avg Delivery Time', value: `${stats.avgDeliveryTime.toFixed(1)}m`, icon: Truck, color: 'text-purple-500', bg: 'bg-purple-500/10', sub: 'Ready → Served' },
+                ].map((stat, i) => (
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="glass-card p-6 rounded-3xl bg-glass/20 border border-text/10 flex items-center gap-6 relative overflow-hidden group"
+                    >
+                        <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center transition-transform group-hover:scale-110 duration-500 flex-shrink-0`}>
+                            <stat.icon size={28} />
+                        </div>
+                        <div className="space-y-1">
+                            <div className="text-[10px] font-black text-muted uppercase tracking-widest">{stat.label}</div>
+                            <div className="text-3xl font-black text-text">{stat.value}</div>
+                            <div className="text-[10px] font-bold text-muted/60 uppercase">{stat.sub}</div>
                         </div>
                     </motion.div>
                 ))}
