@@ -184,6 +184,12 @@ using (var scope = app.Services.CreateScope())
 
         try
         {
+            context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD COLUMN OperatorName TEXT DEFAULT ''");
+            Console.WriteLine("[Database] Added OperatorName column.");
+        } catch (Exception ex) { Console.WriteLine($"[Database] OperatorName column skip: {ex.Message}"); }
+
+        try
+        {
             context.Database.ExecuteSqlRaw("ALTER TABLE OrderItems ADD COLUMN AmendmentVersion INTEGER DEFAULT 0");
             Console.WriteLine("[Database] Added AmendmentVersion column to OrderItems.");
         } catch (Exception ex) { Console.WriteLine($"[Database] AmendmentVersion column skip: {ex.Message}"); }
