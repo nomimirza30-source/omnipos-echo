@@ -371,18 +371,18 @@ const OrderEntry = () => {
                                         key={item.id}
                                         disabled={isItemDisabled}
                                         onClick={() => addToCart(item)}
-                                        className={`bg-glass/20 border border-text/10 p-4 rounded-2xl text-left group transition-all flex gap-4 ${isItemDisabled ? 'opacity-40 grayscale cursor-not-allowed' : 'hover:border-primary/30'}`}
+                                        className={`bg-glass/20 border border-text/10 p-4 rounded-2xl text-left group transition-all flex flex-col h-full min-h-[200px] ${isItemDisabled ? 'opacity-40 grayscale cursor-not-allowed' : 'hover:border-primary/30'}`}
                                     >
-                                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-glass/40 flex-shrink-0 relative">
-                                            <img src={item.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                            {item.stock === 'Low' && (
-                                                <div className="absolute top-1 right-1 bg-red-500 text-[8px] font-black px-1 rounded text-white animate-pulse">LOW</div>
-                                            )}
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="flex justify-between items-start mb-1">
-                                                <div className="font-bold text-text group-hover:text-primary">{item.name}</div>
-                                                <div className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${item.stock === 'Not Available' ? 'text-muted/50 border-text/10' :
+                                        <div className="flex gap-4 mb-3">
+                                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-glass/40 flex-shrink-0 relative">
+                                                <img src={item.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                {item.stock === 'Low' && (
+                                                    <div className="absolute top-1 right-1 bg-red-500 text-[8px] font-black px-1 rounded text-white animate-pulse">LOW</div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-bold text-text group-hover:text-primary truncate">{item.name}</div>
+                                                <div className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border inline-block mt-1 ${item.stock === 'Not Available' ? 'text-muted/50 border-text/10' :
                                                     item.stock === 'Low' ? 'text-red-400 border-red-900/50 bg-red-900/20' :
                                                         item.stock === 'Medium' ? 'text-warning border-warning/20 bg-warning/10' :
                                                             'text-success border-success/20 bg-success/10'
@@ -390,20 +390,24 @@ const OrderEntry = () => {
                                                     {item.stock === 'Not Available' || item.stockQuantity === 0 ? '86-ed' : item.stock}
                                                 </div>
                                                 {typeof item.stockQuantity === 'number' && (
-                                                    <div className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ml-1 ${item.stockQuantity - currentCartQty > 0 ? 'text-primary border-primary/20 bg-primary/10' : 'text-red-400 border-red-900/50 bg-red-900/20'}`}>
+                                                    <div className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ml-1 inline-block ${item.stockQuantity - currentCartQty > 0 ? 'text-primary border-primary/20 bg-primary/10' : 'text-red-400 border-red-900/50 bg-red-900/20'}`}>
                                                         {item.stockQuantity - currentCartQty} Left
                                                     </div>
                                                 )}
                                             </div>
+                                        </div>
+
+                                        <div className="flex-1 flex flex-col">
                                             {item.allergens && (
-                                                <div className="text-[9px] text-red-500 font-bold bg-red-500/10 border border-red-500/20 px-1.5 py-0.5 rounded inline-block mb-1">
+                                                <div className="text-[9px] text-red-500/80 font-bold bg-red-500/5 border border-red-500/10 px-2 py-1 rounded-lg mb-2 line-clamp-2 leading-tight">
                                                     Allergy: {item.allergens}
                                                 </div>
                                             )}
-                                            <div className="text-xs text-muted font-medium">£{item.price.toFixed(2)}</div>
-                                            <div className="mt-2 flex justify-end">
-                                                <div className={`p-1 rounded-lg ${isItemDisabled ? 'bg-glass/40 text-muted' : 'bg-primary/20 text-primary'}`}>
-                                                    <Plus size={14} />
+
+                                            <div className="mt-auto flex justify-between items-center">
+                                                <div className="text-sm font-black text-text/90">£{item.price.toFixed(2)}</div>
+                                                <div className={`p-1.5 rounded-xl transition-colors ${isItemDisabled ? 'bg-glass/40 text-muted' : 'bg-primary/20 text-primary group-hover:bg-primary group-hover:text-slate-950'}`}>
+                                                    <Plus size={16} />
                                                 </div>
                                             </div>
                                         </div>
