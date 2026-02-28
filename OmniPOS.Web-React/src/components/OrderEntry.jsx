@@ -371,7 +371,7 @@ const OrderEntry = () => {
                                         key={item.id}
                                         disabled={isItemDisabled}
                                         onClick={() => addToCart(item)}
-                                        className={`bg-glass/20 border border-text/10 p-4 rounded-2xl text-left group transition-all flex flex-col h-full min-h-[200px] ${isItemDisabled ? 'opacity-40 grayscale cursor-not-allowed' : 'hover:border-primary/30'}`}
+                                        className={`bg-glass/20 border border-text/10 p-4 rounded-2xl text-left group transition-all flex flex-col h-full min-h-[210px] overflow-hidden ${isItemDisabled ? 'opacity-40 grayscale cursor-not-allowed' : 'hover:border-primary/30'}`}
                                     >
                                         <div className="flex gap-4 mb-3">
                                             <div className="w-16 h-16 rounded-xl overflow-hidden bg-glass/40 flex-shrink-0 relative">
